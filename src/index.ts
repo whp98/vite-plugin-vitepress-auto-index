@@ -1,5 +1,5 @@
 import { basename, join } from 'path';
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from 'fs';
 import { type Plugin, type ViteDevServer } from 'vite';
 import type { IndexPluginOptionType } from './types';
 
@@ -51,9 +51,20 @@ function generateIndex (dir: string): void {
       return 0;
     }
   });
+  // 过滤排除的目录
+  const filtered = files.filter(f => !DEFAULT_IGNORE_FOLDER.includes(f));
+
+  // 如果排除后只剩一个同名md文件,则跳过并且删除原来的index.md
+  if (filtered.length === 1 && filtered[0] === `${basename(dir)}.md`) {
+    // 删除已存在的 index.md
+    const indexPath = join(dir, 'index.md');
+    if (existsSync(indexPath)) {
+      unlinkSync(indexPath);
+    }
+    return;
+  }
   for (const file of files) {
     if (excludedFiles.includes(file)) continue;
-
     const filePath = join(dir, file);
     const stats = statSync(filePath);
     if (stats.isDirectory()) {
