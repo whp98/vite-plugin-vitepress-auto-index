@@ -1,11 +1,11 @@
 import { basename, join } from 'path';
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'fs';
 import { type Plugin, type ViteDevServer } from 'vite';
-import type { SidebarPluginOptionType } from './types';
+import type { IndexPluginOptionType } from './types';
 
 import { DEFAULT_IGNORE_FOLDER, log } from './utils';
 
-let option: SidebarPluginOptionType;
+let option: IndexPluginOptionType;
 
 // 尝试从一个md文件中读取标题，读取到第一个 ‘# 标题内容’ 的时候返回这一行
 function getTitleFromFile (realFileName: string): string | undefined {
@@ -77,8 +77,8 @@ function generateIndex (dir: string): void {
   writeFileSync(join(dir, 'index.md'), indexContent);
 }
 
-export default function VitePluginVitePressAutoSidebar (
-  opt: SidebarPluginOptionType = {}
+export default function VitePluginVitePressAutoIndex (
+  opt: IndexPluginOptionType = {}
 ): Plugin {
   return {
     name: 'vite-plugin-vitepress-auto-index',
