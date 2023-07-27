@@ -6,12 +6,12 @@
   "description": "",
   "author": "whp98",
   "license": "MIT",
-  "homepage": "https://github.com/QC2168/vite-plugin-vitepress-auto-sidebar#readme",
+  "homepage": "https://github.com/whp98/vite-plugin-vitepress-auto-index#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/QC2168/vite-plugin-vitepress-auto-sidebar.git"
+    "url": "git+https://github.com/whp98/vite-plugin-vitepress-auto-index.git"
   },
-  "bugs": "https://github.com/QC2168/vite-plugin-vitepress-auto-sidebar/issues",
+  "bugs": "https://github.com/whp98/vite-plugin-vitepress-auto-index/issues",
   "keywords": [
     "vitepress",
     "vite",
