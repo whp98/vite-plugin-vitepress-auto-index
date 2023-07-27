@@ -22,11 +22,10 @@ import AutoIndex from 'vite-plugin-vitepress-auto-index';
 export default defineConfig({
   vite: {
     plugins: [
-      // add plugin
-      AutoIndex({
-        // You can also set options to adjust sidebar data
-        // see option document below
-      })
+      {
+        ...AutoIndex({}),
+        enforce: 'pre'
+      },
     ]
   },
 })
