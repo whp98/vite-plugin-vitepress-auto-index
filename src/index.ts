@@ -94,9 +94,14 @@ function renameIndexMd (dir: string): void {
 // 排除的文件名
 const excludedFiles = DEFAULT_IGNORE_FOLDER;
 
-function generateIndex (dir: string): void {
+function generateIndex (dir: string, option: IndexPluginOptionType): void {
+  const { mdFilePath = 'docs' } = option;
   const files1 = readdirSync(dir);
-  let indexContent = `# ${basename(dir)}\n`;
+  let s = basename(dir);
+  if (s === mdFilePath) {
+    s = '目录';
+  }
+  let indexContent = `# ${s}\n`;
   let files = files1.sort((a: string, b: string): number => {
     const statsA = statSync(join(dir, a));
     const statsB = statSync(join(dir, b));
@@ -129,7 +134,6 @@ function generateIndex (dir: string): void {
         log(`delete ${indexPath}`);
         files = files.filter(f => f !== 'index.md');
       }
-      return;
     } else {
       // 如果只有一个md文件但是名称和目录不一致则应该删除这个目录下和目录同名的md
       // 目录同名的只应该存在于有附件的文章内
@@ -172,7 +176,7 @@ function generateIndex (dir: string): void {
         out = title3;
       }
       // 递归处理子文件夹
-      generateIndex(filePath);
+      generateIndex(filePath, option);
       if (existsSync(join(dir, file, 'index.md'))) {
         indexContent += `- [${out}](./${file}/)\n`;
       } else if (existsSync(join(dir, file, `${file}.md`))) {
@@ -234,10 +238,10 @@ export default function VitePluginVitePressAutoIndex (
       const { mdFilePath = 'docs' } = option;
       // 入口目录
       const docsRoot = join(process.cwd(), mdFilePath);
-      log('begin rename title/index.md to title/title.md');
+      log('begin rename 重命名');
       renameIndexMd(docsRoot);
-      log('finsh rename title/index.md to title/title.md');
-      generateIndex(docsRoot);
+      log('finsh rename 重命名');
+      generateIndex(docsRoot, option);
       log('index generate finish!');
       return config;
     }
