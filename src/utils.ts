@@ -13,5 +13,5 @@ export function removePrefix (str: string, identifier: string | RegExp): string 
 }
 
 export function getTimeStr (): string {
-  return moment().format('YYYYMMDD_h_mm_ss');
+  return moment().format('YYYYMMDD_kk_mm_ss');
 }
