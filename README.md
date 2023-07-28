@@ -30,3 +30,47 @@ export default defineConfig({
   },
 })
 ```
+
+## blog file formate
+1. formate1
+```text
+folder
+ - doc1.md
+ - doc2.md
+```
+auto generate index.md
+```text
+folder
+ - doc1.md
+ - doc2.md
+ - index.md
+```
+
+or 
+```text
+folder
+ - doc1.md
+ - doc2(folder)
+```
+auto generate index.md
+```text
+folder
+ - doc1.md
+ - doc2(folder)
+ - index.md
+```
+
+
+2. formate2
+
+```text
+title(folder)
+ - title.md
+ - asset.jpg
+```
+if not other md file in a folder and have asset md title must
+*same* name with the folder, otherwise your file will be remove into a
+xxxx.time.del.bak file.
+
+if there is an index.md file here it also will be *removed* 
+into a xxxx.time.del.bak file.
