@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-vitepress-auto-index",
   "type": "module",
-  "version": "1.0.2",
+  "version": "1.1.6",
   "packageManager": "pnpm@7.25.1",
   "description": "",
   "author": "whp98",
@@ -15,8 +15,11 @@
   "keywords": [
     "vitepress",
     "vite",
-    "sidebar",
-    "auto-sidebar"
+    "index",
+    "index.md",
+    "auto-index",
+    "auto-rename",
+    "auto-delete"
   ],
   "sideEffects": false,
   "exports": {
@@ -69,6 +72,7 @@
   },
   "dependencies": {
     "@typescript-eslint/parser": "^5.59.2",
+    "moment": "^2.29.4",
     "picocolors": "^1.0.0"
   },
   "peerDependencies": {
