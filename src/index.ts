@@ -191,7 +191,9 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
       indexContent += `- [${out}](./${file})\n`;
     }
   }
-  writeFileSync(join(dir, 'index.md'), indexContent);
+  if (!files.includes(`${basename(dir)}.md`)) {
+    writeFileSync(join(dir, 'index.md'), indexContent);
+  }
 }
 
 export default function VitePluginVitePressAutoIndex (
