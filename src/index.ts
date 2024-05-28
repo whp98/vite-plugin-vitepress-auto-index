@@ -108,7 +108,7 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
   let files = files1.sort((a: string, b: string): number => {
     const statsA = statSync(join(dir, a));
     const statsB = statSync(join(dir, b));
-    if (statsA.isDirectory() && statsB.isDirectory()) {
+    /* if (statsA.isDirectory() && statsB.isDirectory()) {
       return statsB.mtimeMs - statsA.mtimeMs;
     } else if (statsA.isDirectory() && statsB.isFile()) {
       return 1;
@@ -116,7 +116,8 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
       return -1;
     } else {
       return statsB.mtimeMs - statsA.mtimeMs;
-    }
+    } */
+    return statsB.mtimeMs - statsA.mtimeMs;
   });
   // 过滤排除的目录
   const filtered = files.filter(f => {
