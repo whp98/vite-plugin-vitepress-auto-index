@@ -32,12 +32,13 @@ function getTitleFromFile (realFileName: string): string | undefined {
   return undefined;
 }
 
-/* folder mybatis 下面几种情况如何处理
-1. mybatis.md   需要保证这个文件夹下面只有一个md
-2. mybatis.md index.md 这个情况下需要删除index.md
-3. mybatis.md index.md haha.md 这个情况下需要删除mybatis.md
-4. haha.md  新建index.md
-5. index.md 需要重命名成为 mybaits.md */
+/* 用于处理文件命名冲突，避免文件夹出现原始的index.md文件被覆盖的问题
+文件夹名称为mybatis下面几种情况如何处理
+1. mybatis.md  满足单文件带附件的文章特点，需要保证这个文件夹下面只有一个md，并且和目录名一致，不做处理
+2. mybatis.md index.md 这个情况下需要删除index.md 目录下只有一篇文章不要索引文件，并生成备份文件
+3. mybatis.md index.md haha.md 这个情况下需要删除mybatis.md 不要和目录名称一致，并生成备份文件
+4. haha.md  如果之前没有就新建index.md，如果内容和生成不一致就覆盖掉
+5. index.md 需要重命名成为 mybaits.md  因为这个是一篇文章 不需要索引 */
 function renameIndexMd (dir: string): void {
   const files = readdirSync(dir);
   // 统计当前文件夹下.md文件数量
@@ -63,6 +64,7 @@ function renameIndexMd (dir: string): void {
     renameSync(oldPath, newPath);
   }
   if (hasIndexMd && hasFolderMd && !hasOtherMd) {
+    // 有index.md 也有 mybatis.md 没有其他文件 重命名原来的index.md文件
     const unlinkPath = join(dir, 'index.md');
     const unlinkPathBak = join(dir, `index.md.${getTimeStr()}.del.bak`);
     log(`备份 ${unlinkPath} -> ${unlinkPathBak} `);
@@ -71,6 +73,7 @@ function renameIndexMd (dir: string): void {
     log(`delete ${unlinkPath}`);
   }
   if (hasIndexMd && hasFolderMd && hasOtherMd) {
+    // 有index.md 也有 mybatis.md 也有其他md 重命名 mybatis.md 作为备份代表需要重新命名
     const unlinkPath = join(dir, `${basename(dir)}.md`);
     const unlinkPathBak = join(dir, `${basename(dir)}.md.${getTimeStr()}.del.bak`);
     log(`备份 ${unlinkPath} -> ${unlinkPathBak} `);
@@ -106,13 +109,13 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
     const statsA = statSync(join(dir, a));
     const statsB = statSync(join(dir, b));
     if (statsA.isDirectory() && statsB.isDirectory()) {
-      return 0;
+      return statsB.mtime.getDate() - statsA.mtime.getDate();
     } else if (statsA.isDirectory() && statsB.isFile()) {
       return 1;
     } else if (statsA.isFile() && statsB.isDirectory()) {
       return -1;
     } else {
-      return 0;
+      return statsB.mtime.getDate() - statsA.mtime.getDate();
     }
   });
   // 过滤排除的目录
@@ -149,6 +152,7 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
     }
   }
   if (filtered.length > 1 && filtered.includes(`${basename(dir)}.md`)) {
+    // 删除目录同名的MD文件
     const indexPath = join(dir, `${basename(dir)}.md`);
     const existsSync1 = existsSync(indexPath);
     if (existsSync1) {
@@ -191,11 +195,28 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
       indexContent += `- [${out}](./${file})\n`;
     }
   }
+  // 如果不包含文件夹同名文件就写入到index.md中
   if (!files.includes(`${basename(dir)}.md`)) {
-    writeFileSync(join(dir, 'index.md'), indexContent);
+    writeIfDifferent(dir, 'index.md', indexContent);
   }
 }
 
+function writeIfDifferent (dir: string, fileName: string, content: string): void {
+  const filePath = join(dir, fileName);
+  // 检查文件是否存在
+  if (existsSync(filePath)) {
+    // 读取现有文件的内容
+    const existingContent = readFileSync(filePath, 'utf8');
+    // 如果现有内容和要写入的内容一致，则不写入
+    if (existingContent === content) {
+      // log('文件内容一致，不需要写入');
+      return;
+    }
+  }
+  // 写入新内容
+  writeFileSync(filePath, content);
+  log(filePath + ' 文件已写入');
+}
 export default function VitePluginVitePressAutoIndex (
   opt: IndexPluginOptionType = {}
 ): Plugin {
