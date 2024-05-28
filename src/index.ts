@@ -109,13 +109,13 @@ function generateIndex (dir: string, option: IndexPluginOptionType): void {
     const statsA = statSync(join(dir, a));
     const statsB = statSync(join(dir, b));
     if (statsA.isDirectory() && statsB.isDirectory()) {
-      return statsB.mtime.getDate() - statsA.mtime.getDate();
+      return statsB.mtimeMs - statsA.mtimeMs;
     } else if (statsA.isDirectory() && statsB.isFile()) {
       return 1;
     } else if (statsA.isFile() && statsB.isDirectory()) {
       return -1;
     } else {
-      return statsB.mtime.getDate() - statsA.mtime.getDate();
+      return statsB.mtimeMs - statsA.mtimeMs;
     }
   });
   // 过滤排除的目录
